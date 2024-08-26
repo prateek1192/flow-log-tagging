@@ -1,4 +1,4 @@
-package main
+package types
 
 type FlowLog struct {
 	Version     int32

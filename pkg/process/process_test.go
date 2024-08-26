@@ -1,14 +1,15 @@
-package main
+package process
 
 import (
+	"flowLogParser/pkg/types"
 	"sync"
 	"testing"
 )
 
 func TestProcessChunk(t *testing.T) {
 
-	lookupTable := LookupTable{
-		LookupKey{DstPort: "443", Protocol: "tcp"}: {"sv_P1"},
+	lookupTable := types.LookupTable{
+		types.LookupKey{DstPort: "443", Protocol: "tcp"}: {"sv_P1"},
 	}
 
 	protocolMap := map[int]string{
@@ -60,8 +61,8 @@ func TestProcessChunk(t *testing.T) {
 
 func TestProcessChunkMultiple(t *testing.T) {
 
-	lookupTable := LookupTable{
-		LookupKey{DstPort: "443", Protocol: "tcp"}: {"sv_P1", "sv_P2"},
+	lookupTable := types.LookupTable{
+		types.LookupKey{DstPort: "443", Protocol: "tcp"}: {"sv_P1", "sv_P2"},
 	}
 
 	protocolMap := map[int]string{

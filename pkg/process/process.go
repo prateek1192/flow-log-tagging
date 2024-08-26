@@ -1,8 +1,10 @@
-package main
+package process
 
 import (
 	"bufio"
 	"encoding/csv"
+	"flowLogParser/pkg/types"
+	"flowLogParser/pkg/utils"
 	"fmt"
 	"log"
 	"os"
@@ -13,15 +15,15 @@ import (
 )
 
 // ProcessChunk processes a chunk of lines, updating the tagCounts and portProtocolCounts maps.
-func ProcessChunk(lines []string, table LookupTable, tagCounts map[string]int, portProtocolCounts map[string]int, mutex *sync.Mutex, protocolMap map[int]string) {
+func ProcessChunk(lines []string, table types.LookupTable, tagCounts map[string]int, portProtocolCounts map[string]int, mutex *sync.Mutex, protocolMap map[int]string) {
 	for _, line := range lines {
-		flowLog, err := ParseFlowLog(line, protocolMap)
+		flowLog, err := utils.ParseFlowLog(line, protocolMap)
 		if err != nil {
 			log.Printf("Failed to parse flow log: %v", err)
 			continue
 		}
 
-		key := LookupKey{DstPort: flowLog.DstPort, Protocol: strings.ToLower(flowLog.Protocol)}
+		key := types.LookupKey{DstPort: flowLog.DstPort, Protocol: strings.ToLower(flowLog.Protocol)}
 
 		mutex.Lock()
 		if tags, exists := table[key]; exists {
@@ -38,7 +40,7 @@ func ProcessChunk(lines []string, table LookupTable, tagCounts map[string]int, p
 }
 
 // CountTagMatches reads the file with flowLogs and counts the number of matches for each tag and port/protocol combination.
-func CountTagMatches(filePath string, table LookupTable, protocolMap map[int]string) (map[string]int, map[string]int, error) {
+func CountTagMatches(filePath string, table types.LookupTable, protocolMap map[int]string) (map[string]int, map[string]int, error) {
 	flowLogFile, err := os.Open(filePath)
 	if err != nil {
 		return nil, nil, err

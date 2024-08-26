@@ -1,7 +1,8 @@
-package main
+package utils
 
 import (
 	"encoding/csv"
+	"flowLogParser/pkg/types"
 	"fmt"
 	"github.com/gocarina/gocsv"
 	"os"
@@ -9,43 +10,43 @@ import (
 	"strings"
 )
 
-// ParseFlowLog parses a line into a FlowLog struct
-func ParseFlowLog(line string, protocolMap map[int]string) (FlowLog, error) {
+// ParseFlowLog parses a line into a types.FlowLog struct
+func ParseFlowLog(line string, protocolMap map[int]string) (types.FlowLog, error) {
 	fields := strings.Fields(line)
 	if len(fields) < 14 {
-		return FlowLog{}, fmt.Errorf("invalid line format: %s", line)
+		return types.FlowLog{}, fmt.Errorf("invalid line format: %s", line)
 	}
 
 	version, err := strconv.ParseInt(fields[0], 10, 32)
 	if err != nil {
-		return FlowLog{}, fmt.Errorf("error parsing version: %w", err)
+		return types.FlowLog{}, fmt.Errorf("error parsing version: %w", err)
 	}
 	protocolNumber, err := strconv.ParseInt(fields[7], 10, 32)
 	if err != nil {
-		return FlowLog{}, fmt.Errorf("failed to parse protocol number: %w", err)
+		return types.FlowLog{}, fmt.Errorf("failed to parse protocol number: %w", err)
 	}
 	protocolName, exists := protocolMap[int(protocolNumber)]
 	if !exists {
-		return FlowLog{}, fmt.Errorf("unknown protocol number: %d", protocolNumber)
+		return types.FlowLog{}, fmt.Errorf("unknown protocol number: %d", protocolNumber)
 	}
 	packets, err := strconv.ParseInt(fields[8], 10, 64)
 	if err != nil {
-		return FlowLog{}, fmt.Errorf("error parsing packets: %w", err)
+		return types.FlowLog{}, fmt.Errorf("error parsing packets: %w", err)
 	}
 	bytes, err := strconv.ParseInt(fields[9], 10, 64)
 	if err != nil {
-		return FlowLog{}, fmt.Errorf("error parsing bytes: %w", err)
+		return types.FlowLog{}, fmt.Errorf("error parsing bytes: %w", err)
 	}
 	start, err := strconv.ParseInt(fields[10], 10, 64)
 	if err != nil {
-		return FlowLog{}, fmt.Errorf("error parsing start time: %w", err)
+		return types.FlowLog{}, fmt.Errorf("error parsing start time: %w", err)
 	}
 	end, err := strconv.ParseInt(fields[11], 10, 64)
 	if err != nil {
-		return FlowLog{}, fmt.Errorf("error parsing end time: %w", err)
+		return types.FlowLog{}, fmt.Errorf("error parsing end time: %w", err)
 	}
 
-	return FlowLog{
+	return types.FlowLog{
 		Version:     int32(version),
 		AccountId:   fields[1],
 		InterfaceId: fields[2],
@@ -64,7 +65,7 @@ func ParseFlowLog(line string, protocolMap map[int]string) (FlowLog, error) {
 }
 
 // CreateLookupTable opens the lookup table file and reads it into memory
-func CreateLookupTable(filePath string) (LookupTable, error) {
+func CreateLookupTable(filePath string) (types.LookupTable, error) {
 
 	lookupFile, err := os.Open(filePath)
 	if err != nil {
@@ -72,17 +73,17 @@ func CreateLookupTable(filePath string) (LookupTable, error) {
 	}
 	defer lookupFile.Close()
 
-	lookupEntries := make([]*LookupEntry, 0)
+	lookupEntries := make([]*types.LookupEntry, 0)
 
 	err = gocsv.UnmarshalFile(lookupFile, &lookupEntries)
 	if err != nil {
 		return nil, err
 	}
 
-	lookupTable := make(LookupTable)
+	lookupTable := make(types.LookupTable)
 
 	for i := 0; i < len(lookupEntries); i++ {
-		key := LookupKey{DstPort: lookupEntries[i].DstPort, Protocol: strings.ToLower(lookupEntries[i].Protocol)}
+		key := types.LookupKey{DstPort: lookupEntries[i].DstPort, Protocol: strings.ToLower(lookupEntries[i].Protocol)}
 		lookupTable[key] = append(lookupTable[key], lookupEntries[i].Tag)
 
 	}

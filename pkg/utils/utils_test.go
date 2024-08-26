@@ -1,6 +1,7 @@
-package main
+package utils
 
 import (
+	"flowLogParser/pkg/types"
 	"os"
 	"testing"
 )
@@ -108,7 +109,7 @@ func TestLoadLookupTableMultipleSvs(t *testing.T) {
 		t.Errorf("Expected 2 entries, got %d", len(lookupTable))
 	}
 
-	key := LookupKey{DstPort: "443", Protocol: "6"}
+	key := types.LookupKey{DstPort: "443", Protocol: "6"}
 
 	tags, exists := lookupTable[key]
 	if !exists {
