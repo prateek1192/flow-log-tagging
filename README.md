@@ -32,7 +32,7 @@ This tool processes AWS flow logs to count tag occurrences and generate number o
 
 3. **Run the program:**
     ```bash
-    ./flowlog-processor --lookupfile=mylookup.csv --flowlogfile=myflowlog.txt --outputfile=myoutput.csv
+    ./flowlog-processor --lookupfile=<lookupfile> --flowlogfile=<flowlogfile> --outputfile=<outputfile>
     ```
 
    If no arguments are provided, default files will be used:
@@ -58,4 +58,4 @@ This tool processes AWS flow logs to count tag occurrences and generate number o
 
 To run the processor with custom file paths:
 ```bash
-./flowlog-processor --lookupfile=lookup.csv --flowlogfile=flowlog.txt --outputfile=output.csv
+./flowlog-processor --lookupfile=<yourlookupfilepath.csv> --flowlogfile=<yourflowlogfilepath> --outputfile=output.csv
